@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_rss_news/models/parser.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   Home({Key key, this.title}) : super(key: key);
@@ -123,6 +124,7 @@ class _HomeState extends State<Home> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemCount: feed.items.length,
         itemBuilder: (context, i) {
+          RssItem item = feed.items[i];
           return Container(
             child: Card(
               elevation: 4.0,
@@ -136,12 +138,12 @@ class _HomeState extends State<Home> {
                         height: 90.0,
                         width: MediaQuery.of(context).size.width - 20.0,
                         fit: BoxFit.cover,
-                        image: NetworkImage(feed.items[i].enclosure.url),
+                        image: NetworkImage(item.enclosure.url),
                       ),
                       Padding(padding: EdgeInsets.all(4.0),),
-                      styledText(feed.items[i].title, Colors.deepOrange, 1.0, TextAlign.left),
+                      styledText(item.title, Colors.deepOrange, 1.0, TextAlign.left),
                       Padding(padding: EdgeInsets.all(4.0),),
-                      styledText(feed.items[i].pubDate, Colors.grey[500], 0.6, TextAlign.center),
+                      styledText(publishedDateToString(item.pubDate), Colors.grey[500], 0.6, TextAlign.center),
                     ],
                   ),
                 ),
@@ -150,6 +152,24 @@ class _HomeState extends State<Home> {
           );
         }
     );
+  }
+
+  // Convert pubDate into "Publié il y a X minutes/heures/jours"
+  String publishedDateToString(string) {
+    DateFormat dateFormat = DateFormat("E, d MMM yyyy HH:mm:ss");
+    DateTime dateTime = dateFormat.parse(string);
+    int result = DateTime.now().difference(dateTime).inMinutes;
+    if (result >= 2880) {
+      return "Publié il y a ${(result / 1440).floor()} jours";
+    } else if (result >= 1440) {
+      return "Publié il y a ${(result / 1440).floor()} jour";
+    } else if (result >= 120) {
+      return "Publié il y a ${(result / 60).floor()} heures et ${result % 60} minutes";
+    } else if (result >= 60) {
+      return "Publié il y a ${(result / 60).floor()} heure et ${result % 60} minutes";
+    } else {
+      return "Publié il y a $result minutes}";
+    }
   }
 
   void readNews(RssItem item) {
