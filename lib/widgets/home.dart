@@ -33,6 +33,17 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              setState(() {
+                feed = null;
+                parse();
+              });
+            },
+          ),
+        ],
       ),
       body: choixDuBody(),
     );
