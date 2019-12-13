@@ -58,25 +58,39 @@ class _HomeState extends State<Home> {
   // Build card
   Card cardItem(RssItem item) {
     return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Image(
-            image: NetworkImage(item.enclosure.url),
-          ),
-          styledText(item.title, Colors.deepOrange, 2.0),
-          styledText(item.pubDate, Colors.deepOrange[300], 0.8),
-          styledText(item.description, Colors.black, 1.2),
-        ],
+      elevation: 4.0,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Image(
+              height: 160.0,
+              width: MediaQuery.of(context).size.width - 20.0,
+              fit: BoxFit.cover,
+              image: NetworkImage(item.enclosure.url),
+            ),
+            Container(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                children: <Widget>[
+                  styledText(item.title, Colors.deepOrange, 1.6, TextAlign.center),
+                  styledText(item.pubDate, Colors.grey[500], 0.8, TextAlign.center),
+                  Padding(padding: EdgeInsets.all(10.0)),
+                  styledText(item.description, Colors.black, 1.1, TextAlign.justify),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // Build styled text
-  Text styledText(String data, Color color, double factor) {
+  Text styledText(String data, Color color, double factor, align) {
     return Text(
       data,
-      textAlign: TextAlign.center,
+      textAlign: align,
       textScaleFactor: factor,
       style: TextStyle(
         color: color,
@@ -94,8 +108,7 @@ class _HomeState extends State<Home> {
           return Dismissible(
             key: Key(key),
             child: Container(
-              padding: EdgeInsets.all(5.0),
-              height: 120.0,
+              padding: EdgeInsets.all(8.0),
               child: cardItem(item),
             ),
           );
@@ -110,14 +123,14 @@ class _HomeState extends State<Home> {
         itemBuilder: (context, i) {
           return Container(
             child: Card(
-              elevation: 4.0,
+              elevation: 14.0,
               child: InkWell(
                 onTap: (() => print('Tapped grid')),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    styledText(feed.items[i].title, Colors.deepOrange, 2.0),
-                    styledText(feed.items[i].pubDate, Colors.deepOrange[300], 0.8),
+                    styledText(feed.items[i].title, Colors.deepOrange, 2.0, TextAlign.center),
+                    styledText(feed.items[i].pubDate, Colors.deepOrange[300], 0.8, TextAlign.center),
                   ],
                 ),
               ),
