@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_rss_news/models/parser.dart';
+import 'package:flutter_rss_news/widgets/loading.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_rss_news/widgets/styledText.dart';
+import 'package:flutter_rss_news/widgets/news.dart';
 
 class Home extends StatefulWidget {
   Home({Key key, this.title}) : super(key: key);
@@ -17,7 +20,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   RssFeed feed;
-  List<Card> cardNews;
 
   @override void initState() {
     // TODO: implement initState
@@ -27,15 +29,25 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    Orientation orientation = MediaQuery.of(context).orientation;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: ((orientation == Orientation.portrait)? list() : grid()),
-      ),
+      body: choixDuBody(),
     );
+  }
+
+  Widget choixDuBody() {
+    Orientation orientation = MediaQuery.of(context).orientation;
+    if (feed == null) {
+      return Center(
+        child: Loading(),
+      );
+    } else {
+      return Center(
+        child: ((orientation == Orientation.portrait)? list() : grid()),
+      );
+    }
   }
 
   // Parse RssFeed
@@ -44,14 +56,6 @@ class _HomeState extends State<Home> {
     if (received != null) {
       setState(() {
         feed = received;
-        int i = 0;
-
-        feed.items.forEach((feedItem) {
-          RssItem item = feedItem;
-          cardNews[i] = cardItem(item);
-          i++;
-        });
-
       });
     }
   }
@@ -78,28 +82,16 @@ class _HomeState extends State<Home> {
                 padding: EdgeInsets.all(20.0),
                 child: Column(
                   children: <Widget>[
-                    styledText(item.pubDate, Colors.grey[500], 0.8, TextAlign.center),
-                    styledText(item.title, Colors.deepOrange, 1.6, TextAlign.left),
+                    StyledText(publishedDateToString(item.pubDate), color: Colors.grey[500],  factor: 0.8, textAlign: TextAlign.center),
+                    StyledText(item.title, color: Colors.deepOrange, factor: 1.6, textAlign: TextAlign.left),
                     Padding(padding: EdgeInsets.all(10.0)),
-                    styledText(item.description, Colors.black, 1.1, TextAlign.justify),
+                    StyledText(item.description, color: Colors.black, factor: 1.1, textAlign: TextAlign.justify),
                   ],
                 ),
               ),
             ],
           ),
         )
-      ),
-    );
-  }
-
-  // Build styled text
-  Text styledText(String data, Color color, double factor, align) {
-    return Text(
-      data,
-      textAlign: align,
-      textScaleFactor: factor,
-      style: TextStyle(
-        color: color,
       ),
     );
   }
@@ -141,9 +133,9 @@ class _HomeState extends State<Home> {
                         image: NetworkImage(item.enclosure.url),
                       ),
                       Padding(padding: EdgeInsets.all(4.0),),
-                      styledText(item.title, Colors.deepOrange, 1.0, TextAlign.left),
+                      StyledText(item.title, color: Colors.deepOrange, factor: 1.0, textAlign: TextAlign.left),
                       Padding(padding: EdgeInsets.all(4.0),),
-                      styledText(publishedDateToString(item.pubDate), Colors.grey[500], 0.6, TextAlign.center),
+                      StyledText(publishedDateToString(item.pubDate), color: Colors.grey[500], factor: 0.6, textAlign: TextAlign.center),
                     ],
                   ),
                 ),
@@ -156,6 +148,7 @@ class _HomeState extends State<Home> {
 
   // Convert pubDate into "Publié il y a X minutes/heures/jours"
   String publishedDateToString(string) {
+    // DateFormat for Le Monde
     DateFormat dateFormat = DateFormat("E, d MMM yyyy HH:mm:ss");
     DateTime dateTime = dateFormat.parse(string);
     int result = DateTime.now().difference(dateTime).inMinutes;
@@ -173,9 +166,8 @@ class _HomeState extends State<Home> {
   }
 
   void readNews(RssItem item) {
-    //Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) {
-      // return News(item);
-      print("hello");
-   // }));
+    Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) {
+      return News();
+   }));
   }
 }

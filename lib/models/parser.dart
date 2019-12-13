@@ -4,6 +4,7 @@ import 'dart:async';
 
 class Parser {
 
+  // LE MONDE
   final url = "https://www.lemonde.fr/planete/rss_full.xml";
 
   Future loadRSS() async {
