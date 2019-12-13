@@ -4,7 +4,7 @@ class StyledText extends Text {
 
   // Build styled text
   StyledText(String data,
-      {textAlign: TextAlign.left, color: Colors.deepOrange, double factor}) :
+      {textAlign: TextAlign.justify, color: Colors.deepOrange, double factor}) :
         super(
         data,
         textAlign: textAlign,

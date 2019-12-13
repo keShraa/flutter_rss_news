@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'package:flutter_rss_news/models/parser.dart';
 import 'package:flutter_rss_news/widgets/loading.dart';
@@ -38,12 +39,12 @@ class _HomeState extends State<Home> {
   }
 
   Widget choixDuBody() {
-    Orientation orientation = MediaQuery.of(context).orientation;
     if (feed == null) {
       return Center(
         child: Loading(),
       );
     } else {
+      Orientation orientation = MediaQuery.of(context).orientation;
       return Center(
         child: ((orientation == Orientation.portrait)? list() : grid()),
       );
@@ -82,10 +83,11 @@ class _HomeState extends State<Home> {
                 padding: EdgeInsets.all(20.0),
                 child: Column(
                   children: <Widget>[
-                    StyledText(publishedDateToString(item.pubDate), color: Colors.grey[500],  factor: 0.8, textAlign: TextAlign.center),
-                    StyledText(item.title, color: Colors.deepOrange, factor: 1.6, textAlign: TextAlign.left),
+                    StyledText(item.title, color: Colors.deepOrange, factor: 1.6),
                     Padding(padding: EdgeInsets.all(10.0)),
-                    StyledText(item.description, color: Colors.black, factor: 1.1, textAlign: TextAlign.justify),
+                    StyledText(item.description, color: Colors.black, factor: 1.1),
+                    Padding(padding: EdgeInsets.all(10.0)),
+                    StyledText(publishedDateToString(item.pubDate), color: Colors.grey[500],  factor: 0.8, textAlign: TextAlign.center),
                   ],
                 ),
               ),
@@ -124,17 +126,23 @@ class _HomeState extends State<Home> {
                 onTap: (() => print('Tapped grid')),
                 child: SingleChildScrollView(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Image(
-                        height: 90.0,
-                        width: MediaQuery.of(context).size.width - 20.0,
-                        fit: BoxFit.cover,
-                        image: NetworkImage(item.enclosure.url),
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Image(
+                            height: 90.0,
+                            width: MediaQuery.of(context).size.width - 20.0,
+                            fit: BoxFit.cover,
+                            image: NetworkImage(item.enclosure.url),
+                          ),
+                          Padding(padding: EdgeInsets.all(4.0),),
+                          StyledText(item.title, color: Colors.deepOrange, factor: 1.0),
+                        ],
                       ),
-                      Padding(padding: EdgeInsets.all(4.0),),
-                      StyledText(item.title, color: Colors.deepOrange, factor: 1.0, textAlign: TextAlign.left),
-                      Padding(padding: EdgeInsets.all(4.0),),
                       StyledText(publishedDateToString(item.pubDate), color: Colors.grey[500], factor: 0.6, textAlign: TextAlign.center),
                     ],
                   ),
@@ -161,7 +169,7 @@ class _HomeState extends State<Home> {
     } else if (result >= 60) {
       return "Publié il y a ${(result / 60).floor()} heure et ${result % 60} minutes";
     } else {
-      return "Publié il y a $result minutes}";
+      return "Publié il y a $result minutes";
     }
   }
 
