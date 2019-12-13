@@ -59,29 +59,34 @@ class _HomeState extends State<Home> {
   Card cardItem(RssItem item) {
     return Card(
       elevation: 4.0,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Image(
-              height: 160.0,
-              width: MediaQuery.of(context).size.width - 20.0,
-              fit: BoxFit.cover,
-              image: NetworkImage(item.enclosure.url),
-            ),
-            Container(
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                children: <Widget>[
-                  styledText(item.title, Colors.deepOrange, 1.6, TextAlign.center),
-                  styledText(item.pubDate, Colors.grey[500], 0.8, TextAlign.center),
-                  Padding(padding: EdgeInsets.all(10.0)),
-                  styledText(item.description, Colors.black, 1.1, TextAlign.justify),
-                ],
+      child: InkWell(
+        onTap: (() {
+          readNews(item);
+        }),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Image(
+                height: 160.0,
+                width: MediaQuery.of(context).size.width - 20.0,
+                fit: BoxFit.cover,
+                image: NetworkImage(item.enclosure.url),
               ),
-            ),
-          ],
-        ),
+              Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  children: <Widget>[
+                    styledText(item.pubDate, Colors.grey[500], 0.8, TextAlign.center),
+                    styledText(item.title, Colors.deepOrange, 1.6, TextAlign.left),
+                    Padding(padding: EdgeInsets.all(10.0)),
+                    styledText(item.description, Colors.black, 1.1, TextAlign.justify),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
       ),
     );
   }
@@ -104,39 +109,53 @@ class _HomeState extends State<Home> {
         itemCount: feed.items.length,
         itemBuilder: (context, i) {
           RssItem item = feed.items[i];
-          String key = item.title;
-          return Dismissible(
-            key: Key(key),
-            child: Container(
-              padding: EdgeInsets.all(8.0),
-              child: cardItem(item),
-            ),
+          return Container(
+            padding: EdgeInsets.all(8.0),
+            child: cardItem(item),
           );
-        });
+        }
+    );
   }
 
   // Build Grid
   Widget grid() {
     return GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-        itemCount: cardNews.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemCount: feed.items.length,
         itemBuilder: (context, i) {
           return Container(
             child: Card(
-              elevation: 14.0,
+              elevation: 4.0,
               child: InkWell(
                 onTap: (() => print('Tapped grid')),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    styledText(feed.items[i].title, Colors.deepOrange, 2.0, TextAlign.center),
-                    styledText(feed.items[i].pubDate, Colors.deepOrange[300], 0.8, TextAlign.center),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Image(
+                        height: 90.0,
+                        width: MediaQuery.of(context).size.width - 20.0,
+                        fit: BoxFit.cover,
+                        image: NetworkImage(feed.items[i].enclosure.url),
+                      ),
+                      Padding(padding: EdgeInsets.all(4.0),),
+                      styledText(feed.items[i].title, Colors.deepOrange, 1.0, TextAlign.left),
+                      Padding(padding: EdgeInsets.all(4.0),),
+                      styledText(feed.items[i].pubDate, Colors.grey[500], 0.6, TextAlign.center),
+                    ],
+                  ),
                 ),
               ),
             ),
           );
         }
     );
+  }
+
+  void readNews(RssItem item) {
+    //Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) {
+      // return News(item);
+      print("hello");
+   // }));
   }
 }
