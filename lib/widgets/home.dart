@@ -5,9 +5,9 @@ import 'package:flutter_rss_news/models/parser.dart';
 import 'package:flutter_rss_news/widgets/loading.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_rss_news/widgets/convertDate.dart';
 import 'package:flutter_rss_news/widgets/styledText.dart';
-import 'package:flutter_rss_news/widgets/news.dart';
+import 'package:flutter_rss_news/widgets/show_new.dart';
 
 class Home extends StatefulWidget {
   Home({Key key, this.title}) : super(key: key);
@@ -67,7 +67,9 @@ class _HomeState extends State<Home> {
       elevation: 4.0,
       child: InkWell(
         onTap: (() {
-          readNews(item);
+          Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) {
+            return ShowNew(item);
+          }));
         }),
         child: SingleChildScrollView(
           child: Column(
@@ -87,7 +89,7 @@ class _HomeState extends State<Home> {
                     Padding(padding: EdgeInsets.all(10.0)),
                     StyledText(item.description, color: Colors.black, factor: 1.1),
                     Padding(padding: EdgeInsets.all(10.0)),
-                    StyledText(publishedDateToString(item.pubDate), color: Colors.grey[500],  factor: 0.8, textAlign: TextAlign.center),
+                    StyledText(ConvertDate().publishedDateToString(item.pubDate), color: Colors.grey[500],  factor: 0.8, textAlign: TextAlign.center),
                   ],
                 ),
               ),
@@ -123,7 +125,12 @@ class _HomeState extends State<Home> {
             child: Card(
               elevation: 4.0,
               child: InkWell(
-                onTap: (() => print('Tapped grid')),
+                onTap: (() {
+                  Navigator.push(context,
+                      new MaterialPageRoute(builder: (BuildContext context) {
+                        return ShowNew(item);
+                      }));
+                }),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
@@ -143,7 +150,7 @@ class _HomeState extends State<Home> {
                           StyledText(item.title, color: Colors.deepOrange, factor: 1.0),
                         ],
                       ),
-                      StyledText(publishedDateToString(item.pubDate), color: Colors.grey[500], factor: 0.6, textAlign: TextAlign.center),
+                      StyledText(ConvertDate().publishedDateToString(item.pubDate), color: Colors.grey[500], factor: 0.6, textAlign: TextAlign.center),
                     ],
                   ),
                 ),
@@ -154,28 +161,4 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // Convert pubDate into "Publié il y a X minutes/heures/jours"
-  String publishedDateToString(string) {
-    // DateFormat for Le Monde
-    DateFormat dateFormat = DateFormat("E, d MMM yyyy HH:mm:ss");
-    DateTime dateTime = dateFormat.parse(string);
-    int result = DateTime.now().difference(dateTime).inMinutes;
-    if (result >= 2880) {
-      return "Publié il y a ${(result / 1440).floor()} jours";
-    } else if (result >= 1440) {
-      return "Publié il y a ${(result / 1440).floor()} jour";
-    } else if (result >= 120) {
-      return "Publié il y a ${(result / 60).floor()} heures et ${result % 60} minutes";
-    } else if (result >= 60) {
-      return "Publié il y a ${(result / 60).floor()} heure et ${result % 60} minutes";
-    } else {
-      return "Publié il y a $result minutes";
-    }
-  }
-
-  void readNews(RssItem item) {
-    Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) {
-      return News();
-   }));
-  }
 }
